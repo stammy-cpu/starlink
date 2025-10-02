@@ -1,103 +1,123 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { createServer } from '@/lib/supabase/server'
 
-export default function Home() {
+export const metadata = { title: 'Dashboard' }
+
+export default async function HomePage() {
+  const supabase = await createServer()
+  await supabase.auth.getSession() // not showing email anymore
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#1a0b2e] via-[#140a2f] to-[#0f0a1f] text-white">
+      {/* glowing background shapes */}
+      <div className="absolute -top-40 -left-32 h-96 w-96 rounded-full bg-fuchsia-500/30 blur-3xl" />
+      <div className="absolute bottom-0 right-0 h-[28rem] w-[28rem] rounded-full bg-indigo-500/30 blur-3xl" />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <div className="relative mx-auto max-w-6xl px-6 py-16">
+        {/* header */}
+        <header className="mb-12 text-center">
+          <h1 className="text-4xl font-bold md:text-5xl">
+            Welcome to STAMMY&apos;s Tech World
+          </h1>
+          <p className="mt-3 text-base text-white/70 md:text-lg">
+            Pick a package that fits your needs. Make payment. Upload proof, get activated asapu.
+          </p>
+        </header>
+
+        {/* packages grid */}
+        <div className="grid gap-8 md:grid-cols-2">
+          <PackageCard
+            tier="₦5,000 / mo"
+            tagline="Essentials for individuals"
+            features={['Single device access']}
+            href="/pay/transfer?plan=1device"
+          />
+          <PackageCard
+            tier="₦10,000 / mo"
+            tagline="For 2 devices"
+            features={['Two devices supported']}
+            href="/pay/transfer?plan=2devices"
+          />
+
+          <PackageCard
+            tier="₦15,000 / mo"
+            tagline="For 3 devices"
+            features={['Three devices supported']}
+            href="/pay/transfer?plan=3devices"
+          />
+          <PackageCard
+            tier="₦20,000 / mo"
+            tagline="For 4 devices"
+            features={['Four devices supported']}
+            href="/pay/transfer?plan=4devices"
+          />
+
+          <PackageCard
+            tier="₦25,000 / mo"
+            tagline="Up to 8 devices"
+            features={['Unlimited access (capped at 8 devices)']}
+            href="/pay/transfer?plan=8devices"
+          />
+          <PackageCard
+            tier="₦35,000 / mo"
+            tagline="Truly unlimited"
+            features={['Unlimited device support']}
+            href="/pay/transfer?plan=unlimited"
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        {/* steps */}
+        <div className="mt-16 grid gap-6 md:grid-cols-3">
+          <Step n={1} title="Select a package" text="Pick the plan that fits your device needs." />
+          <Step n={2} title="Pay via transfer" text="Send to our account, then upload your receipt." />
+          <Step n={3} title="We activate your plan" text="Quick verification. Instant access." />
+        </div>
+      </div>
+    </main>
+  )
+}
+
+function PackageCard({ tier, tagline, features, href }: {
+  tier: string, tagline: string, features: string[], href: string
+}) {
+  return (
+    <article
+      className="group relative rounded-3xl p-[1px] transition-transform duration-500 ease-out hover:-translate-y-3 hover:scale-105"
+    >
+      <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl shadow-lg transition-transform duration-500 ease-out group-hover:scale-105 group-hover:shadow-[0_30px_80px_rgba(124,58,237,0.45)]">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">{tier}</h2>
+        </div>
+        <p className="mt-2 text-sm text-white/70">{tagline}</p>
+        <ul className="mt-4 space-y-2 text-sm text-white/80">
+          {features.map((f) => (
+            <li key={f} className="flex gap-2">
+              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-white/60" />
+              {f}
+            </li>
+          ))}
+        </ul>
+        <Link
+          href={href}
+          className="mt-6 block w-full rounded-xl bg-gradient-to-r from-fuchsia-500 to-indigo-500 px-4 py-2 text-center text-sm font-medium shadow-md hover:opacity-90"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          Select Package
+        </Link>
+      </div>
+    </article>
+  )
+}
+
+function Step({ n, title, text }: { n: number, title: string, text: string }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur-xl hover:bg-white/15 transition">
+      <div className="flex items-center gap-3">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-500 to-indigo-500 text-sm font-bold">
+          {n}
+        </div>
+        <h3 className="text-base font-semibold">{title}</h3>
+      </div>
+      <p className="mt-2 text-sm text-white/70">{text}</p>
     </div>
-  );
+  )
 }
